@@ -1,8 +1,9 @@
 var MongoClient = require('mongodb').MongoClient;  
 var appointmentObj = require('../database/appointments');
 var ObjectId = require('mongodb').ObjectID;
+var config = require('../Generic/config');
 
-var url = "mongodb://localhost:27017/";  
+var url = config.mongoDBURL(); 
 var dbName = "AndroidApp";
 var tableName = "UserTable";
 //var callback = function(err, data) {
