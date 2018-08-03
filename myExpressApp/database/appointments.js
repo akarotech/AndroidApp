@@ -1,8 +1,8 @@
 var MongoClient = require('mongodb').MongoClient;  
 var ObjectId = require('mongodb').ObjectID;
-var config = require('../Generic/config');
+var config = require('../config/config');
 
-var url = config.mongoDBURL(); 
+var url = config.DB_URL; 
 var dbName = "AndroidApp";
 var tableName = "AppointmentTable";
 
@@ -33,7 +33,7 @@ saveAppointment :function (patronId, req, callback) {
           dbo.collection(tableName).findOne({_id:appointmentId}, function(err, result) {
             if (err) throw err;
             db.close();
-            callback(err, JSON.stringify(result));
+            callback(err, result);
           });
         });
     },
@@ -48,7 +48,7 @@ saveAppointment :function (patronId, req, callback) {
               if (err) throw err;
               console.log("1 document updated");
               db.close();
-              callback(err, JSON.stringify(res));
+              callback(err, res);
             });
           });
     },
@@ -63,7 +63,7 @@ saveAppointment :function (patronId, req, callback) {
               if (err) throw err;
               console.log("1 document deleted");
               db.close();
-              callback(err, JSON.stringify(obj));
+              callback(err, obj);
             });
           });
     }

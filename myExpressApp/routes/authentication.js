@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var userDataObj = require('../database/userData');
 var genericsObj = require('../Generic/generic');
+var dateFormat = require('dateformat');
 
 
 
@@ -90,24 +91,61 @@ router.get('/api/auth/login', function(req, res) {
              return;
         }
 
-        var dbRequest = {
-            "userEmail" : !genericsObj.testNullUndefined(req.body.userName) ? req.body.userName : "",
-            "userPassword" : !genericsObj.testNullUndefined(req.body.userPassword) ? req.body.userPassword : "",
-            "firstName" : !genericsObj.testNullUndefined(req.body.firstName) ? req.body.firstName : "",
-            "lastName" : !genericsObj.testNullUndefined(req.body.lastName) ? req.body.lastName : "",
-            "gender" : !genericsObj.testNullUndefined(req.body.gender) ? req.body.gender : "",
-
-            "appointment": {
-                "appointmentTitle":"defaultTitle",
-                "appointmentDateTime":"1/1/1970 00:00:00",
-                "appointmentDescription":"defaultDescription",
-                "appointmentDuraion":"0"
+        userDataObj.findEmail(req.body.userName, function(err, result) {
+            if (genericsObj.testNullUndefined(err)) {
+                if (!genericsObj.testNullUndefined(result)) {
+                
+                    if (!genericsObj.testNullUndefined(result["_id"])) {
+                        var errorMsg = 'Signup Error:Email already registered!'; 
+                        res.status(409).send(genericsObj.generateEmailAlreadyRegisteredError(errorMsg));
+                        return;
+                    }
+                    else {
+                        var now = new Date();
+                        var dbRequest = {
+                            "userEmail" : !genericsObj.testNullUndefined(req.body.userName) ? req.body.userName : "",
+                            "userPassword" : !genericsObj.testNullUndefined(req.body.userPassword) ? req.body.userPassword : "",
+                            "firstName" : !genericsObj.testNullUndefined(req.body.firstName) ? req.body.firstName : "",
+                            "lastName" : !genericsObj.testNullUndefined(req.body.lastName) ? req.body.lastName : "",
+                            "gender" : !genericsObj.testNullUndefined(req.body.gender) ? req.body.gender : "",
+                
+                            "appointment": {
+                                "appointmentTitle":"defaultTitle",
+                                "appointmentDateTime":dateFormat(now, "dd/mm/yyyy HH:mm:ss"),
+                                "appointmentDescription":"defaultDescription",
+                                "appointmentDuraion":"0"
+                            }
+                
+                        }
+                    
+                         userDataObj.saveUser(dbRequest, function(err, result) {
+                            res.status(201).send(genericsObj.generateResults(err, result));
+                        })
+                    }
+                }
+                else {
+                    var now = new Date();
+                    var dbRequest = {
+                        "userEmail" : !genericsObj.testNullUndefined(req.body.userName) ? req.body.userName : "",
+                        "userPassword" : !genericsObj.testNullUndefined(req.body.userPassword) ? req.body.userPassword : "",
+                        "firstName" : !genericsObj.testNullUndefined(req.body.firstName) ? req.body.firstName : "",
+                        "lastName" : !genericsObj.testNullUndefined(req.body.lastName) ? req.body.lastName : "",
+                        "gender" : !genericsObj.testNullUndefined(req.body.gender) ? req.body.gender : "",
+            
+                        "appointment": {
+                            "appointmentTitle":"defaultTitle",
+                            "appointmentDateTime":dateFormat(now, "dd/mm/yyyy HH:mm:ss"),
+                            "appointmentDescription":"defaultDescription",
+                            "appointmentDuraion":"0"
+                        }
+            
+                    }
+                
+                     userDataObj.saveUser(dbRequest, function(err, result) {
+                        res.status(201).send(genericsObj.generateResults(err, result));
+                    })
+                }
             }
-
-        }
-    
-         userDataObj.saveUser(dbRequest, function(err, result) {
-            res.send(genericsObj.generateResults(err, result));
         })
      });
 

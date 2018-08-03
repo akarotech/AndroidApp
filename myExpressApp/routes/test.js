@@ -16,6 +16,10 @@ var dbRequest = {
     "gender" : "M"
 }
 
- userDataObj.updateUser(dbRequest, function(err, result) {
+//  userDataObj.updateUser(dbRequest, function(err, result) {
+//     console.log(result);
+// })
+
+userDataObj.findEmail("rakesh.kum31@gmail.com", function(err, result) {
     console.log(result);
 })

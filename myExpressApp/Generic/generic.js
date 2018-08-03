@@ -31,6 +31,15 @@ module.exports = {
         }
 
        return results;
+    },
+    generateEmailAlreadyRegisteredError :function(err) {
+        var results = {"error" : null};
+        if (!this.testNullUndefined(err)) {
+            results["error"] = err;
+            results["status"] = 409;
+        }
+
+       return results;
     }
 
 };

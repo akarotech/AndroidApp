@@ -1,13 +1,12 @@
 var MongoClient = require('mongodb').MongoClient;  
 var appointmentObj = require('../database/appointments');
 var ObjectId = require('mongodb').ObjectID;
-var config = require('../Generic/config');
+var config = require('../config/config');
 
-var url = config.mongoDBURL(); 
+var url = config.DB_URL; 
 var dbName = "AndroidApp";
 var tableName = "UserTable";
-//var callback = function(err, data) {
-  //};
+
   module.exports = {
 saveUser :function (req, callback) {
     console.log("Save to Db called ");  
@@ -28,14 +27,26 @@ saveUser :function (req, callback) {
             var patronId = res.ops[0]._id;
             appointmentObj.saveAppointment(patronId, req, function(err, result) {
                 res["child"] = result;
-                callback(err, JSON.stringify(res));
+                callback(err, res);
             });
         }
         else {
-            callback(err, JSON.stringify(res));
+            callback(err, res);
         }
         });  
         });  
+    },
+
+    findEmail:function(userEmail, callback) {
+        MongoClient.connect(url, function(err, db) {
+            if (err) throw err;
+            var dbo = db.db(dbName);
+            dbo.collection(tableName).findOne({_userEmail:userEmail}, function(err, result) {
+              if (err) throw err;
+              db.close();
+              callback(err, result);
+            });
+      });
     },
 
     findUser :function(userEmail, userPassword, callback) {
@@ -57,7 +68,7 @@ saveUser :function (req, callback) {
             ]).toArray(function(err, res) {
             if (err) throw err;
             db.close();
-            callback(err, JSON.stringify(res));
+            callback(err, res);
           });
 
           /*dbo.collection(tableName).findOne({_userEmail:userEmail, _userPassword:userPassword}, function(err, result) {
@@ -85,11 +96,11 @@ saveUser :function (req, callback) {
                 var patronId = new ObjectId(req.id);
                 appointmentObj.saveAppointment(patronId, req, function(err, result) {
                     res["child"] = result;
-                    callback(err, JSON.stringify(res));
+                    callback(err, res);
                 });
             }
             else {
-                callback(err, JSON.stringify(res));
+                callback(err, res);
             }
 
              
